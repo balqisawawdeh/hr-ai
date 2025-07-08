@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - HR-Max{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                Dashboard
+            </h1>
+            <div class="text-muted">
+                <i class="fas fa-calendar-alt me-1"></i>
+                {{ "now"|date:"F d, Y" }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Active Employees
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ total_employees }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Departments
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ total_departments }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-building fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Positions
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ total_positions }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-briefcase fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Recent Hires
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ recent_hires|length }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-plus fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Recent Activity -->
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% if perms.hr.add_employee %}
+                    <div class="col-md-6">
+                        <a href="{% url 'employee_add' %}" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-user-plus fa-2x d-block mb-2"></i>
+                            Add Employee
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-6">
+                        <a href="{% url 'employee_list' %}" class="btn btn-outline-primary w-100 py-3">
+                            <i class="fas fa-search fa-2x d-block mb-2"></i>
+                            Search Employees
+                        </a>
+                    </div>
+                    
+                    {% if perms.hr.add_department %}
+                    <div class="col-md-6">
+                        <a href="{% url 'department_add' %}" class="btn btn-success w-100 py-3">
+                            <i class="fas fa-building fa-2x d-block mb-2"></i>
+                            Add Department
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if perms.hr.add_position %}
+                    <div class="col-md-6">
+                        <a href="{% url 'position_add' %}" class="btn btn-info w-100 py-3">
+                            <i class="fas fa-briefcase fa-2x d-block mb-2"></i>
+                            Add Position
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Hires -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Recent Hires
+                </h5>
+                <a href="{% url 'employee_list' %}" class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_hires %}
+                    <div class="list-group list-group-flush">
+                        {% for employee in recent_hires %}
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'employee_detail' employee.pk %}" class="text-decoration-none">
+                                            {{ employee.full_name }}
+                                        </a>
+                                    </h6>
+                                    <p class="mb-1 text-muted small">
+                                        {{ employee.position.title }} - {{ employee.department.name }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        Hired {{ employee.hire_date|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                                <span class="badge status-{{ employee.employment_status }}">
+                                    {{ employee.get_employment_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-user-plus fa-3x mb-3 opacity-50"></i>
+                        <p>No recent hires to display</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    System Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">User Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Name:</strong> {{ user.first_name }} {{ user.last_name|default:user.username }}</li>
+                            <li><strong>Email:</strong> {{ user.email|default:"Not provided" }}</li>
+                            <li><strong>Role:</strong> 
+                                {% if user.is_superuser %}
+                                    <span class="badge bg-danger">Super Administrator</span>
+                                {% elif user.is_staff %}
+                                    <span class="badge bg-warning">Staff</span>
+                                {% else %}
+                                    <span class="badge bg-primary">HR Personnel</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Permissions</h6>
+                        <ul class="list-unstyled">
+                            <li>
+                                <i class="fas fa-{% if perms.hr.view_employee %}check text-success{% else %}times text-danger{% endif %} me-2"></i>
+                                View Employees
+                            </li>
+                            <li>
+                                <i class="fas fa-{% if perms.hr.add_employee %}check text-success{% else %}times text-danger{% endif %} me-2"></i>
+                                Add Employees
+                            </li>
+                            <li>
+                                <i class="fas fa-{% if perms.hr.change_employee %}check text-success{% else %}times text-danger{% endif %} me-2"></i>
+                                Edit Employees
+                            </li>
+                            <li>
+                                <i class="fas fa-{% if perms.hr.delete_employee %}check text-success{% else %}times text-danger{% endif %} me-2"></i>
+                                Delete Employees
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some dashboard-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate statistics cards on load
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}
+
